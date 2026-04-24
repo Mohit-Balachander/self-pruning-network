@@ -37,7 +37,7 @@ class PrunableLinear(nn.Module):
         self.weight      = nn.Parameter(torch.randn(out_features, in_features) * 0.01)
         self.bias        = nn.Parameter(torch.zeros(out_features))
         # gate_scores start at 0 → sigmoid(0) = 0.5, gates half-open
-        self.gate_scores = nn.Parameter(torch.zeros(out_features, in_features))
+        self.gate_scores = nn.Parameter(torch.ones(out_features, in_features) * 2.0)
 
     def forward(self, x):
         gates          = torch.sigmoid(self.gate_scores)   # (out, in) in (0,1)
@@ -66,12 +66,12 @@ class SelfPruningNet(nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.fc1  = PrunableLinear(3072, 512)
-        self.bn1  = nn.BatchNorm1d(512)
-        self.fc2  = PrunableLinear(512,  256)
-        self.bn2  = nn.BatchNorm1d(256)
-        self.fc3  = PrunableLinear(256,  128)
-        self.fc4  = PrunableLinear(128,  10)
+        self.fc1  = PrunableLinear(3072, 64)
+        self.bn1  = nn.BatchNorm1d(64)
+        self.fc2  = PrunableLinear(64,  32)
+        self.bn2  = nn.BatchNorm1d(32)
+        self.fc3  = PrunableLinear(32,  16)
+        self.fc4  = PrunableLinear(16,  10)
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -236,7 +236,7 @@ if __name__ == '__main__':
     train_loader, test_loader = get_loaders()
 
     # three lambda values to demonstrate the sparsity-accuracy tradeoff
-    lambdas = [1e-6, 1e-5, 1e-4]
+    lambdas = [1e-4, 1e-3, 1e-2]
 
     results    = []
     best_model = None
