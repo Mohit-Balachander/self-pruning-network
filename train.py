@@ -169,7 +169,7 @@ def accuracy(model, loader, device):
     return 100 * correct / total
 
 
-def sparsity(model, threshold=0.1):
+def sparsity(model, threshold=0.5):
     # % of gates below threshold -> weight is considered pruned
     gates  = model.all_gates()
     pruned = (gates < threshold).sum().item()
@@ -211,8 +211,8 @@ def plot(model, lam):
 
     fig, ax = plt.subplots(figsize=(9, 5))
     ax.hist(gates, bins=100, color='steelblue', edgecolor='black', alpha=0.82)
-    ax.axvline(0.1, color='crimson', linestyle='--', linewidth=1.6,
-               label='prune threshold = 0.10')
+    ax.axvline(0.5, color='crimson', linestyle='--', linewidth=1.6,
+           label='prune threshold = 0.50')
     ax.set_title(f'Gate Value Distribution  (lambda = {lam})\n'
                  f'Mohit Balachander — Tredence Case Study', fontsize=13)
     ax.set_xlabel('Gate value  [0 = pruned  →  1 = fully active]', fontsize=11)
@@ -236,7 +236,7 @@ if __name__ == '__main__':
     train_loader, test_loader = get_loaders()
 
     # three lambda values to demonstrate the sparsity-accuracy tradeoff
-    lambdas = [1e-4, 1e-3, 1e-2]
+    lambdas = [1e-6, 1e-5, 1e-4]
 
     results    = []
     best_model = None
